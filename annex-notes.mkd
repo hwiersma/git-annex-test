@@ -1,0 +1,34 @@
+# Notes on Git Annex
+
+This is a test to use [git annex](https://git-annex.branchable.com) to store files larger than the 100 MB limit set by github on S3 and the local NAS.
+
+## Setup
+
+### Initremote the S3 bucket 
+
+1. Get your IAM credentials for the S3 bucket, if you don't have them already. The IAM credentials can be used with s3cmd to make a .s3cfg file. You should be able to run `s3cmd ls` and see a listing of our buckets on S3. 
+
+1. Temporarily set environment variables:
+```
+$ export AWS_ACCESS_KEY_ID=YOURKEYIDHERE
+$ export AWS_SECRET_ACCESS_KEY=YOURSECRETKEYHERE
+```
+
+1. Initialize the remote:
+```
+$ git annex initremote s3-bucket bucket="git-annex.tveon.com" fileprefix=test type=S3 encryption=none
+```
+
+### Initremote the NAS
+
+1. Auto-mount TVEONNAS to a directory. On Linux, add a line like the following to /etc/fstab:
+```
+//TVEONNAS/TVeonExchange    /mnt/tveonnas   cifs    guest,uid=1000,iocharset=utf8     0   0
+```
+Then run `sudo mount -a` to mount the NAS at /mnt/tveonnas, or wherever you prefer.
+On Windows, assign `//TVEONNAS/TVeonExchange` to a fixed drive letter (Righ click on TVeonExchange, assign drive letter).
+
+1. Initialize the remote:
+```
+$ git annex initremote tveonnas type=directory directory=/mnt/tveonnas/git-annex/ encryption=none
+```
